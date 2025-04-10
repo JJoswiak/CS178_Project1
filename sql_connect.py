@@ -1,11 +1,11 @@
-import sql_connect
+import pymysql
 import creds
 
 def get_conn():
-    conn = sql_connect.get_conn(
-        host= creds.host,
-        user= creds.user,
-        password = creds.password,
-        db=creds.db,
-    )
-    return conn
+   conn = pymysql.connect(
+       host= creds.host,
+       user= creds.user,
+       password = creds.password,
+       db=creds.db,
+   )
+   return conn
