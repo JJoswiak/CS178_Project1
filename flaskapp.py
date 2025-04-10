@@ -18,7 +18,7 @@ def add_movie():
         # Insert movie into the database
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO movies (title, genre) VALUES (%s, %s)', (title, genre))
+        cursor.execute('INSERT INTO movie (title, genre) VALUES (%s, %s)', (title, genre))
         conn.commit()
         cursor.close()
         conn.close()
@@ -36,7 +36,7 @@ def delete_movie():
         # Delete movie from the database
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('DELETE FROM movies WHERE title = %s', (title,))
+        cursor.execute('DELETE FROM movie WHERE title = %s', (title,))
         conn.commit()
         cursor.close()
         conn.close()
@@ -51,7 +51,7 @@ def display_movies():
     # Fetch movies from the database
     conn = sql_connect.get_conn()
     cursor = conn.cursor()
-    cursor.execute('SELECT title, genre FROM movies')
+    cursor.execute('SELECT title, FROM movie')
     movies = cursor.fetchall()
     cursor.close()
     conn.close()
