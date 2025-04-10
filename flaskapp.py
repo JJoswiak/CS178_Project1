@@ -12,7 +12,7 @@ app.config['MYSQL_DB'] = 'movies'  # Replace with your actual database name
 
 # Connect to MySQL
 def get_db_connection():
-    conn = mysql_connect.connect(
+    conn = sql_connect.connect(
         host=app.config['MYSQL_HOST'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
