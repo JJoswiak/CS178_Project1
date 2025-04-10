@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-import mysql.connector
+import sql_connect
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for using flash messages
@@ -12,7 +12,7 @@ app.config['MYSQL_DB'] = 'movies'  # Replace with your actual database name
 
 # Connect to MySQL
 def get_db_connection():
-    conn = mysql.connector.connect(
+    conn = mysql_connect.connect(
         host=app.config['MYSQL_HOST'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
