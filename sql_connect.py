@@ -1,7 +1,7 @@
 import pymysql
 import creds
 
-def get_conn():
+def get_db_connection():
    conn = pymysql.connect(
        host= creds.host,
        user= creds.user,
