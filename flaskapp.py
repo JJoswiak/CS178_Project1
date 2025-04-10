@@ -4,22 +4,6 @@ import sql_connect
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for using flash messages
 
-# MySQL database configuration
-app.config['MYSQL_HOST'] = 'database-1.czqkw0ewck2n.us-east-1.rds.amazonaws.com'
-app.config['MYSQL_USER'] = 'admin'
-app.config['MYSQL_PASSWORD'] = 'BucksInSix'
-app.config['MYSQL_DB'] = 'movies'  # Replace with your actual database name
-
-# Connect to MySQL
-def get_db_connection():
-    conn = sql_connect.get_conn(
-        host=app.config['MYSQL_HOST'],
-        user=app.config['MYSQL_USER'],
-        password=app.config['MYSQL_PASSWORD'],
-        database=app.config['MYSQL_DB']
-    )
-    return conn
-
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -65,7 +49,7 @@ def delete_movie():
 @app.route('/display-movies')
 def display_movies():
     # Fetch movies from the database
-    conn = get_db_connection()
+    conn = sql_connect.get_conn()
     cursor = conn.cursor()
     cursor.execute('SELECT title, genre FROM movies')
     movies = cursor.fetchall()
