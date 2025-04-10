@@ -8,7 +8,7 @@ app.secret_key = 'your_secret_key'  # Required for using flash messages
 app.config['MYSQL_HOST'] = 'database-1.czqkw0ewck2n.us-east-1.rds.amazonaws.com'
 app.config['MYSQL_USER'] = 'admin'
 app.config['MYSQL_PASSWORD'] = 'BucksInSix'
-app.config['MYSQL_DB'] = 'movies_db'  # Replace with your actual database name
+app.config['MYSQL_DB'] = 'movies'  # Replace with your actual database name
 
 # Connect to MySQL
 def get_db_connection():
