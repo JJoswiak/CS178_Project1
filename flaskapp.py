@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import sql_connect
-import creds
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for using flash messages
