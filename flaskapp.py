@@ -51,7 +51,7 @@ def display_movies():
     # Fetch movies from the database
     conn = sql_connect.get_conn()
     cursor = conn.cursor()
-    cursor.execute('SELECT title, FROM movie')
+    cursor.execute('SELECT title FROM movie')
     movies = cursor.fetchall()
     cursor.close()
     conn.close()
