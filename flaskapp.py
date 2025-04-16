@@ -101,19 +101,45 @@ def delete_movie():
   
    return render_template('delete_movie.html')
 
+@app.route('/update-movie/<int:movie_id>', methods=['GET', 'POST'])
+@login_required
+def update_movie(movie_id):
+    conn = sql_connect.get_conn()
+    cursor = conn.cursor()
+    
+    # Fetch the movie's current details
+    cursor.execute('SELECT * FROM movie WHERE movie_id = %s', (movie_id,))
+    movie = cursor.fetchone()
+    
+    if request.method == 'POST':
+        new_title = request.form['title']
+        cursor.execute('UPDATE movie SET title = %s WHERE movie_id = %s', (new_title, movie_id))
+        conn.commit()
+        flash('Movie updated successfully!', 'success')
+        return redirect(url_for('display_movies'))
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('update_movie.html', movie=movie)
 
 @app.route('/display-movies')
 @login_required
 def display_movies():
-   # Query to retrieve all movies from the database (removed genre)
-   conn = sql_connect.get_conn()
-   cursor = conn.cursor()
-   cursor.execute('SELECT title FROM movie ORDER BY movie_id DESC')
-   movies = cursor.fetchall()
-   cursor.close()
-   conn.close()
-  
-   return render_template('display_movies.html', movies=movies)
+    # Query to retrieve movies along with user names using SQL JOIN
+    conn = sql_connect.get_conn()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT movie.title, users.username
+        FROM movie
+        JOIN users ON movie.user_id = users.user_id
+        ORDER BY movie.movie_id DESC
+    ''')
+    movies = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template('display_movies.html', movies=movies)
 
 
 if __name__ == '__main__':

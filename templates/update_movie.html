@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Update Movie</title></head>
+<body>
+    <a href="{{ url_for('home') }}">← Back to Home</a>
+
+   <h2>Update Movie</h2>
+   <form action="{{ url_for('update_movie', movie_id=movie[0]) }}" method="POST">
+       <label for="title">New Title:</label>
+       <input type="text" name="title" value="{{ movie[1] }}" required><br>
+       <button type="submit">Update Movie</button>
+   </form>
+</body>
+</html>
