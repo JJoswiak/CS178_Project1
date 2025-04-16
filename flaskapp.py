@@ -60,12 +60,11 @@ def login_required(route_func):
 def add_movie():
     if request.method == 'POST':
         title = request.form['title']
-        genre = request.form['genre']
         
-        # Insert the new movie into the database
+        # Insert the new movie into the database (removed genre part)
         conn = sql_connect.get_conn()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO movie (title, genre) VALUES (%s, %s)', (title, genre))
+        cursor.execute('INSERT INTO movie (title) VALUES (%s)', (title,))
         conn.commit()
         cursor.close()
         conn.close()
@@ -97,10 +96,10 @@ def delete_movie():
 @app.route('/display-movies')
 @login_required
 def display_movies():
-    # Query to retrieve all movies from the database
+    # Query to retrieve all movies from the database (removed genre)
     conn = sql_connect.get_conn()
     cursor = conn.cursor()
-    cursor.execute('SELECT title, genre FROM movie')
+    cursor.execute('SELECT title FROM movie')
     movies = cursor.fetchall()
     cursor.close()
     conn.close()
