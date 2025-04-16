@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Movies DB</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #4CAF50; }
+        form { max-width: 300px; margin: 0 auto; }
+        label { font-size: 1.1em; margin-top: 10px; display: block; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #45a049; }
+        .message { padding: 10px; border-radius: 5px; }
+        .danger { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+    <h2>Sign Up</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div>
+        {% for category, message in messages %}
+          <div class="message danger">
+            {{ message }}
+          </div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/signup" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <button type="submit">Create Account</button>
+    </form>
+
+    <p>Already have an account? <a href="/login">Login here</a>.</p>
+
+</body>
+</html>
