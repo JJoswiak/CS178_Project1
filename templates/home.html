@@ -2,13 +2,26 @@
 <html>
 <head>
     <title>Home</title>
+    <!-- Optional: Add Bootstrap for prettier buttons -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Welcome to the Movies DB!</h1>
-    <ul>
-        <li><a href="/add-movie">Add a Movie</a></li>
-        <li><a href="/delete-movie">Delete a Movie</a></li>
-        <li><a href="/display-movies">View Movies</a></li>
-    </ul>
+    <div class="container mt-4">
+        <h1>Welcome to the Movies DB!</h1>
+
+        <h3 class="mt-4">Movie Management (MySQL)</h3>
+        <ul>
+            <li><a href="/add-movie">Add a Movie</a></li>
+            <li><a href="/delete-movie">Delete a Movie</a></li>
+            <li><a href="/display-movies">View Movies</a></li>
+        </ul>
+
+        <h3 class="mt-4">User Management (DynamoDB)</h3>
+        <ul>
+            <li><a href="/add-user">Add a User</a></li>
+            <li><a href="/delete-user">Delete a User</a></li>
+            <li><a href="/display-users">View All Users</a></li>
+        </ul>
+    </div>
 </body>
 </html>
