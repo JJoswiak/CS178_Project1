@@ -2,13 +2,13 @@
 <html>
 <head><title>Add Movie</title></head>
 <body>
-    <a href="{{ url_for('home') }}">← Back to Home</a>
+   <a href="{{ url_for('home') }}">← Back to Home</a>
 
-   <h2>Add a Movie</h2>
-   <form action="/add-movie" method="POST">
-       <label for="title">Movie Title:</label>
-       <input type="text" name="title" required><br>
-       <button type="submit">Add Movie</button>
-   </form>
+  <h2>Add a Movie</h2>
+  <form action="/add-movie" method="POST">
+      <label for="title">Movie Title:</label>
+      <input type="text" name="title" required><br>
+      <button type="submit">Add Movie</button>
+  </form>
 </body>
 </html>
