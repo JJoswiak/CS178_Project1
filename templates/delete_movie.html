@@ -2,6 +2,8 @@
 <html>
 <head><title>Delete Movie</title></head>
 <body>
+    <a href="{{ url_for('home') }}">← Back to Home</a>
+
    <h2>Delete a Movie</h2>
    <form action="/delete-movie" method="POST">
        <label for="title">Movie Title to Delete:</label>
