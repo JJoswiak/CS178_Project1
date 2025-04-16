@@ -2,26 +2,31 @@
 <html>
 <head>
     <title>Home</title>
-    <!-- Optional: Add Bootstrap for prettier buttons -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container mt-4">
-        <h1>Welcome to the Movies DB!</h1>
+    <h1>Welcome to the Movies DB!</h1>
 
-        <h3 class="mt-4">Movie Management (MySQL)</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+          <li style="color: {% if category == 'danger' %}red{% elif category == 'success' %}green{% else %}blue{% endif %};">
+            {{ message }}
+          </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% if logged_in %}
+        <p>Hello, {{ username }}! <a href="/logout">Logout</a></p>
         <ul>
             <li><a href="/add-movie">Add a Movie</a></li>
             <li><a href="/delete-movie">Delete a Movie</a></li>
             <li><a href="/display-movies">View Movies</a></li>
         </ul>
-
-        <h3 class="mt-4">User Management (DynamoDB)</h3>
-        <ul>
-            <li><a href="/add-user">Add a User</a></li>
-            <li><a href="/delete-user">Delete a User</a></li>
-            <li><a href="/display-users">View All Users</a></li>
-        </ul>
-    </div>
+    {% else %}
+        <p><a href="/login">Login</a> or <a href="/signup">Sign up</a> to use the movie database.</p>
+    {% endif %}
 </body>
 </html>
