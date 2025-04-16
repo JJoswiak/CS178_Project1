@@ -1,107 +1,111 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sql_connect
-from dynamo_code import add_user, get_all_users
-from dynamo_code import update_user_genre, delete_user
-
+from dynamo_code import create_user, verify_user, hash_password  # Ensure hash_password is available
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Required for using flash messages
+app.secret_key = 'your_secret_key'
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    # Pass the username from session to the template for personalized greetings
+    return render_template('home.html', logged_in='username' in session, username=session.get('username'))
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # Create a user with the provided credentials
+        if create_user(username, password):
+            flash('Account created. Please log in.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Username already exists or error occurred.', 'danger')
+    return render_template('signup.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # Verify the user's credentials
+        if verify_user(username, password):
+            session['username'] = username  # Store username in the session
+            flash('Login successful!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Invalid credentials.', 'danger')
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)  # Remove the username from session to log out
+    flash('Logged out.', 'info')
+    return redirect(url_for('login'))
+
+# Ensure that only logged-in users can access these routes
+def login_required(route_func):
+    def wrapper(*args, **kwargs):
+        if 'username' not in session:
+            flash("You must be logged in to view this page.", "warning")
+            return redirect(url_for('login'))
+        return route_func(*args, **kwargs)
+    wrapper.__name__ = route_func.__name__
+    return wrapper
 
 @app.route('/add-movie', methods=['GET', 'POST'])
+@login_required
 def add_movie():
     if request.method == 'POST':
-        # Extract form data
         title = request.form['title']
         genre = request.form['genre']
         
-        # Insert movie into the database
-        conn = get_db_connection()
+        # Insert the new movie into the database
+        conn = sql_connect.get_conn()
         cursor = conn.cursor()
         cursor.execute('INSERT INTO movie (title, genre) VALUES (%s, %s)', (title, genre))
         conn.commit()
         cursor.close()
         conn.close()
-
-        flash('Movie added successfully!', 'success')  # Display success message
+        
+        flash('Movie added successfully!', 'success')
         return redirect(url_for('home'))
-    else:
-        return render_template('add_movie.html')
+    
+    return render_template('add_movie.html')
 
 @app.route('/delete-movie', methods=['GET', 'POST'])
+@login_required
 def delete_movie():
     if request.method == 'POST':
         title = request.form['title']
-
-        # Delete movie from the database
-        conn = get_db_connection()
+        
+        # Delete the movie from the database
+        conn = sql_connect.get_conn()
         cursor = conn.cursor()
         cursor.execute('DELETE FROM movie WHERE title = %s', (title,))
         conn.commit()
         cursor.close()
         conn.close()
-
-        flash('Movie deleted successfully!', 'success')  # Display success message
+        
+        flash('Movie deleted successfully!', 'success')
         return redirect(url_for('home'))
-    else:
-        return render_template('delete_movie.html')
+    
+    return render_template('delete_movie.html')
 
 @app.route('/display-movies')
+@login_required
 def display_movies():
-    # Fetch movies from the database
+    # Query to retrieve all movies from the database
     conn = sql_connect.get_conn()
     cursor = conn.cursor()
-    cursor.execute('SELECT title FROM movie')
+    cursor.execute('SELECT title, genre FROM movie')
     movies = cursor.fetchall()
     cursor.close()
     conn.close()
-
+    
     return render_template('display_movies.html', movies=movies)
 
-@app.route('/add-user', methods=['GET', 'POST'])
-def add_user_route():
-    if request.method == 'POST':
-        first = request.form['first_name']
-        last = request.form['last_name']
-        genre = request.form['favorite_genre']
-        
-        add_user(first, last, genre)
-        flash('User added successfully!', 'success')
-        return redirect(url_for('home'))
-    return render_template('add_user.html')
-
-@app.route('/display-users')
-def display_users():
-    users = get_all_users()
-    user_list = [(u['FirstName'], u['LastName'], u['FavoriteGenre']) for u in users]
-    return render_template('display_users.html', users=user_list)
-
-@app.route('/update-user', methods=['GET', 'POST'])
-def update_user_route():
-    if request.method == 'POST':
-        first = request.form['first_name']
-        last = request.form['last_name']
-        new_genre = request.form['new_genre']
-        
-        update_user_genre(first, last, new_genre)
-        flash('User updated successfully!', 'success')
-        return redirect(url_for('home'))
-    return render_template('update_user.html')
-
-@app.route('/delete-user', methods=['GET', 'POST'])
-def delete_user_route():
-    if request.method == 'POST':
-        first = request.form['first_name']
-        last = request.form['last_name']
-        
-        delete_user(first, last)
-        flash('User deleted successfully!', 'success')
-        return redirect(url_for('home'))
-    return render_template('delete_user.html')
-
-# These two lines of code should always be the last in the file
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
