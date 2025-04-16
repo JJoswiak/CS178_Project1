@@ -108,7 +108,7 @@ def display_movies():
    # Query to retrieve all movies from the database (removed genre)
    conn = sql_connect.get_conn()
    cursor = conn.cursor()
-   cursor.execute('SELECT title FROM movie')
+   cursor.execute('SELECT title FROM movie ORDER BY movie_id DESC')
    movies = cursor.fetchall()
    cursor.close()
    conn.close()
