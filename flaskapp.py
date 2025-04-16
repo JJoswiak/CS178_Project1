@@ -7,7 +7,6 @@ app.secret_key = 'your_secret_key'
 
 @app.route('/')
 def home():
-    # Pass the username from session to the template for personalized greetings
     return render_template('home.html', logged_in='username' in session, username=session.get('username'))
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -16,7 +15,6 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         
-        # Create a user with the provided credentials
         if create_user(username, password):
             flash('Account created. Please log in.', 'success')
             return redirect(url_for('login'))
@@ -30,9 +28,8 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        # Verify the user's credentials
         if verify_user(username, password):
-            session['username'] = username  # Store username in the session
+            session['username'] = username
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
@@ -41,11 +38,10 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)  # Remove the username from session to log out
+    session.pop('username', None)
     flash('Logged out.', 'info')
     return redirect(url_for('login'))
 
-# Ensure that only logged-in users can access these routes
 def login_required(route_func):
     def wrapper(*args, **kwargs):
         if 'username' not in session:
@@ -60,18 +56,24 @@ def login_required(route_func):
 def add_movie():
     if request.method == 'POST':
         title = request.form['title']
-        
-        # Insert the new movie into the database (removed genre part)
+        release_date = request.form.get('release_date')
+        runtime = request.form.get('runtime')
+
         conn = sql_connect.get_conn()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO movie (title) VALUES (%s)', (title,))
+
+        cursor.execute('''
+            INSERT INTO movie (title, release_date, runtime)
+            VALUES (%s, %s, %s)
+        ''', (title, release_date or None, runtime or None))
+
         conn.commit()
         cursor.close()
         conn.close()
-        
+
         flash('Movie added successfully!', 'success')
-        return redirect(url_for('home'))
-    
+        return redirect(url_for('display_movies'))
+
     return render_template('add_movie.html')
 
 @app.route('/delete-movie', methods=['GET', 'POST'])
@@ -79,31 +81,28 @@ def add_movie():
 def delete_movie():
     if request.method == 'POST':
         title = request.form['title']
-        
-        # Delete the movie from the database
+
         conn = sql_connect.get_conn()
         cursor = conn.cursor()
         cursor.execute('DELETE FROM movie WHERE title = %s', (title,))
         conn.commit()
         cursor.close()
         conn.close()
-        
+
         flash('Movie deleted successfully!', 'success')
-        return redirect(url_for('home'))
-    
+        return redirect(url_for('display_movies'))  # ✅ Redirect to updated list
     return render_template('delete_movie.html')
 
 @app.route('/display-movies')
 @login_required
 def display_movies():
-    # Query to retrieve all movies from the database (removed genre)
     conn = sql_connect.get_conn()
     cursor = conn.cursor()
     cursor.execute('SELECT title FROM movie')
     movies = cursor.fetchall()
     cursor.close()
     conn.close()
-    
+
     return render_template('display_movies.html', movies=movies)
 
 if __name__ == '__main__':
