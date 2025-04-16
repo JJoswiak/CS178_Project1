@@ -1,46 +1,33 @@
 import boto3
+from werkzeug.security import generate_password_hash, check_password_hash
 
-# Initialize the DynamoDB resource
-dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
-TABLE_NAME = 'Users'
-table = dynamodb.Table(TABLE_NAME)
+# DynamoDB connection (replace with your actual DynamoDB connection setup)
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+table = dynamodb.Table('users')  # Assuming a DynamoDB table named 'users'
 
-# Add a new user to DynamoDB
-def add_user(first_name, last_name, favorite_genre):
-    response = table.put_item(
-        Item={
-            'FirstName': first_name,
-            'LastName': last_name,
-            'FavoriteGenre': favorite_genre
-        }
+def hash_password(password):
+    return generate_password_hash(password)
+
+def create_user(username, password):
+    hashed_password = hash_password(password)
+    
+    # Check if the username already exists
+    response = table.get_item(Key={'username': username})
+    if 'Item' in response:
+        return False  # Username exists
+    
+    # If the username doesn't exist, create a new user
+    table.put_item(
+        Item={'username': username, 'password': hashed_password}
     )
-    return response
+    return True
 
-# Get all users from DynamoDB
-def get_all_users():
-    response = table.scan()
-    return response.get('Items', [])
-
-# Update a user's favorite genre
-def update_user_genre(first_name, last_name, new_genre):
-    response = table.update_item(
-        Key={
-            'FirstName': first_name,
-            'LastName': last_name
-        },
-        UpdateExpression='SET FavoriteGenre = :genre',
-        ExpressionAttributeValues={
-            ':genre': new_genre
-        }
-    )
-    return response
-
-# Delete a user from the table
-def delete_user(first_name, last_name):
-    response = table.delete_item(
-        Key={
-            'FirstName': first_name,
-            'LastName': last_name
-        }
-    )
-    return response
+def verify_user(username, password):
+    # Fetch user by username
+    response = table.get_item(Key={'username': username})
+    if 'Item' not in response:
+        return False  # Username doesn't exist
+    
+    # Check password
+    stored_hash = response['Item']['password']
+    return check_password_hash(stored_hash, password)
