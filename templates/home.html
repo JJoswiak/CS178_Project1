@@ -1,20 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Movies DB</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #4CAF50; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { text-decoration: none; color: #4CAF50; }
+        a:hover { color: #45a049; }
+        .message { padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .danger { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
 </head>
 <body>
+
     <h1>Welcome to the Movies DB!</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <ul>
+        <div>
         {% for category, message in messages %}
-          <li style="color: {% if category == 'danger' %}red{% elif category == 'success' %}green{% else %}blue{% endif %};">
+          <div class="message {% if category == 'danger' %}danger{% elif category == 'success' %}success{% else %}info{% endif %}">
             {{ message }}
-          </li>
+          </div>
         {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     {% endwith %}
 
@@ -28,5 +43,6 @@
     {% else %}
         <p><a href="/login">Login</a> or <a href="/signup">Sign up</a> to use the movie database.</p>
     {% endif %}
+
 </body>
 </html>
