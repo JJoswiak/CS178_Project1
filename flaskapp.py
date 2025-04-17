@@ -65,21 +65,29 @@ def login_required(route_func):
 @app.route('/add-movie', methods=['GET', 'POST'])
 @login_required
 def add_movie():
-   if request.method == 'POST':
-       title = request.form['title']
-      
-       # Insert the new movie into the database (removed genre part)
-       conn = sql_connect.get_conn()
-       cursor = conn.cursor()
-       cursor.execute('INSERT INTO movie (title) VALUES (%s)', (title,))
-       conn.commit()
-       cursor.close()
-       conn.close()
-      
-       flash('Movie added successfully!', 'success')
-       return redirect(url_for('home'))
-  
-   return render_template('add_movie.html')
+    if request.method == 'POST':
+        title = request.form['title'].strip()
+
+        conn = sql_connect.get_conn()
+        cursor = conn.cursor()
+
+        # Check if movie already exists
+        cursor.execute('SELECT * FROM movie WHERE title = %s', (title,))
+        existing_movie = cursor.fetchone()
+
+        if existing_movie:
+            flash('Movie already exists in the database!', 'warning')
+        else:
+            cursor.execute('INSERT INTO movie (title) VALUES (%s)', (title,))
+            conn.commit()
+            flash('Movie added successfully!', 'success')
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for('home'))
+
+    return render_template('add_movie.html')
 
 
 @app.route('/delete-movie', methods=['GET', 'POST'])
