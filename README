@@ -23,6 +23,7 @@
 # - AWS RDS (MySQL) – SQL database for storing movie data
 # - Werkzeug Security – Secure password hashing and checking
 # - Python 3
+
 ---
 
 ## Setup & Run Instructions
